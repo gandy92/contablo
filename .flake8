@@ -1,0 +1,9 @@
+# https://dev.to/m1yag1/how-to-setup-your-project-with-pre-commit-black-and-flake8-183k
+[flake8]
+ignore = E203, E226, E266, E501, E704, W503, F403, F401
+max-line-length = 119
+max-complexity = 25
+# 18
+# select = B,C,E,F,W,T4,B9
+select = C,E,F,W,B,B950
+extend-ignore = E203, E501

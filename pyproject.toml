@@ -1,0 +1,69 @@
+[project]
+name = "cotalo"
+dynamic = ["version"]
+description = "Configurable Table Loader package for python"
+authors = [{ name = "Andy Thaller", email = "gandy92@googlemail.com" }]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "click",
+  "pydantic",
+  "python-magic",
+  "dateparser",
+  "iso3166",
+  "pandas",  # soon to be dropped, after soem refacturing
+]
+
+[project.scripts]
+cotalo = "cotalo.cli:cli"
+
+[project.optional-dependencies]
+#test = ["pytest", "pytest-cov"]
+test = ["pytest"]
+dev = ["pre-commit"]
+
+[project.urls]
+Homepage = "https://github.com/gandy92/cotalo"
+
+[tool.setuptools]
+packages = ["cotalo"]
+
+[tool.setuptools.dynamic]
+version = { attr = "cotalo.__version__" }
+
+[tool.pytest.ini_options]
+#addopts = "--cov=cotalo --cov-report html"
+#addopts = "--cov=cotalo"
+
+#[tool.setuptools.package-data]
+## https://til.simonwillison.net/python/pyproject#user-content-package-data
+#demo_package = ["static/*", "templates/*"]
+
+[build-system]
+# this is actually default, but doesn't hurt either
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
