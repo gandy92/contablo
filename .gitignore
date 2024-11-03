@@ -1,0 +1,16 @@
+.coverage
+docs/html
+.idea
+build
+dist
+/.tox
+cover/
+docs/_*/
+tmp/
+venv*/
+*.pyc
+*.egg
+*.egg-info
+.env
+.eggs
+*.log
