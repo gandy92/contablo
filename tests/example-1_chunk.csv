@@ -1,0 +1,3 @@
+Datum;Name;Text;Betrag (EUR);Saldo (EUR)
+30.03.2005;"Irgendeine Bank";"SEPA-Basislastschrift; Irgendeine Bank; LEISTUNGEN PER 30.03.2005, IBAN DE1234567890abcdef, AZ 0000000000, IN EUR: Zinsen 7,50; Mandate Ref 000-0000-00000; Creditor ID DE3800000000000000; End To End ID: 00000000000000 Kunden-Referenz: 00000000000000";"-7,50";"9,11"
+22.03.2005;Irgendeine Firma;"�berweisungsgutschrift; Irgendeine Firma; RE-NR.00000-0000.V.31.03.05; ";"11,96";"56,61"

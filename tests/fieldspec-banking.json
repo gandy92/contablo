@@ -1,0 +1,37 @@
+[
+    {
+        "name": "date",
+        "type": "date",
+        "help": "Date of payment"
+    },
+    {
+        "name": "payee",
+        "type": "string",
+        "help": "Person or institution sending or receiving the payment"
+    },
+    {
+        "name": "note",
+        "type": "string",
+        "help": "Transaction notes"
+    },
+    {
+        "name": "iban",
+        "type": "string",
+        "help": "Payee IBAN"
+    },
+    {
+        "name": "bic",
+        "type": "string",
+        "help": "Payee BIC, if applicable"
+    },
+    {
+        "name": "amount",
+        "type": "number",
+        "help": "Payment amount"
+    },
+    {
+        "name": "balance",
+        "type": "number",
+        "help": "New account balance"
+    }
+]
