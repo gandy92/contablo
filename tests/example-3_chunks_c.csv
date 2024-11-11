@@ -1,0 +1,12 @@
+"Kontonummer:";"DE1234567890abcde / Girokonto";
+
+"Von:";"01.03.2005";
+"Bis:";"31.03.2005";
+"Kontostand vom 31.03.2005:";"1.234,56 EUR";
+
+"Buchungstag";"Wertstellung";"Buchungstext";"Auftraggeber / Beg�nstigter";"Verwendungszweck";"Kontonummer";"BLZ";"Betrag (EUR)";"Gl�ubiger-ID";"Mandatsreferenz";"Kundenreferenz";
+"01.11.2023";"01.11.2023";"�berweisung";"Homer Simson";"bekannt";"DE41000000000000000000";"BIC387468";"-1.123,45";"";"";"NOTPROVIDED";
+"01.11.2023";"01.11.2023";"Lastschrift";"Versicherung AG";"Ueberschussanteil 13,15";"DE77000000000000000000";"BIC12345";"-148,41";"";"";"";
+"01.11.2023";"01.11.2023";"Kartenzahlung";"Supermarkt";"2005-03-31      Debitk.60 VISA Debit";"DE96000000000000000000";"BIC98765";"-111,11";"";"";"0000000000";
+"01.11.2023";"01.11.2023";"Gutschrift";"Marge Simpson";"bekannt";"DE90000000000000000000";"BIC987654";"76,54";"";"";"NOTPROVIDED";
+"01.11.2023";"";"";"";"Tagessaldo";"";"";"1.234,56";

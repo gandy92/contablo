@@ -1,8 +1,8 @@
 [project]
-name = "cotalo"
+name = "contablo"
 dynamic = ["version"]
 description = "Configurable Table Loader package for python"
-authors = [{ name = "Andy Thaller", email = "gandy92@googlemail.com" }]
+authors = [{ name = "gandy92", email = "gandy92@googlemail.com" }]
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -18,11 +18,10 @@ dependencies = [
   "python-magic",
   "dateparser",
   "iso3166",
-  "pandas",  # soon to be dropped, after soem refacturing
 ]
 
 [project.scripts]
-cotalo = "cotalo.cli:cli"
+contablo = "contablo.cli:cli"
 
 [project.optional-dependencies]
 #test = ["pytest", "pytest-cov"]
@@ -30,17 +29,17 @@ test = ["pytest"]
 dev = ["pre-commit"]
 
 [project.urls]
-Homepage = "https://github.com/gandy92/cotalo"
+Homepage = "https://github.com/gandy92/contablo"
 
 [tool.setuptools]
-packages = ["cotalo"]
+packages = ["contablo"]
 
 [tool.setuptools.dynamic]
-version = { attr = "cotalo.__version__" }
+version = { attr = "contablo.__version__" }
 
 [tool.pytest.ini_options]
-#addopts = "--cov=cotalo --cov-report html"
-#addopts = "--cov=cotalo"
+#addopts = "--cov=contablo --cov-report html"
+#addopts = "--cov=contablo"
 
 #[tool.setuptools.package-data]
 ## https://til.simonwillison.net/python/pyproject#user-content-package-data
