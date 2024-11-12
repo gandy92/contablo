@@ -153,7 +153,7 @@ If you want to contribute to this project, please use the following steps:
 
 # Commit Message Structure
 
-This projects aims to follow the [Conventional Commits](https*://www.conventionalcommits.org/en/v1.0.0/#summary) guidelines.
+This projects aims to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) guidelines.
 
 When writing commit messages, use one of the following categories to clearly describe the purpose of your commit:
 
