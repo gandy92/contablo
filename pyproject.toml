@@ -1,10 +1,11 @@
-[project]
+[tool.poetry]
 name = "contablo"
-dynamic = ["version"]
+version = "0.1.0"
 description = "Configurable Table Loader package for python"
-authors = [{ name = "gandy92", email = "gandy92@googlemail.com" }]
+authors = ["gandy92 <gandy92@googlemail.com>"]
+license = "MIT"
 readme = "README.md"
-requires-python = ">=3.8"
+repository = "https://github.com/gandy92/contablo"
 classifiers = [
   "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
@@ -12,43 +13,28 @@ classifiers = [
   "Natural Language :: English",
   "Operating System :: OS Independent",
 ]
-dependencies = [
-  "click",
-  "pydantic",
-  "python-magic",
-  "dateparser",
-  "iso3166",
-]
 
-[project.scripts]
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+pydantic = "^2.9.2"
+python-magic = "^0.4.27"
+dateparser = "^1.2.0"
+iso3166 = "^2.1.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+pre-commit = "^4.0.1"
+
+[tool.poetry.scripts]
 contablo = "contablo.cli:cli"
-
-[project.optional-dependencies]
-#test = ["pytest", "pytest-cov"]
-test = ["pytest"]
-dev = ["pre-commit"]
-
-[project.urls]
-Homepage = "https://github.com/gandy92/contablo"
-
-[tool.setuptools]
-packages = ["contablo"]
-
-[tool.setuptools.dynamic]
-version = { attr = "contablo.__version__" }
-
 [tool.pytest.ini_options]
 #addopts = "--cov=contablo --cov-report html"
 #addopts = "--cov=contablo"
 
-#[tool.setuptools.package-data]
-## https://til.simonwillison.net/python/pyproject#user-content-package-data
-#demo_package = ["static/*", "templates/*"]
-
 [build-system]
-# this is actually default, but doesn't hurt either
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 120
