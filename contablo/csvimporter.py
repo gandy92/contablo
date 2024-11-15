@@ -99,7 +99,7 @@ def import_csv_with_spec(csv_file: str, import_spec: ImportSpec, importable_fact
                 raise ImportColumnMismatchError()
             logging.info("Columns match, proceeding with import.")
 
-            importable = importable_factory.clone_empty()
+            importable: ImporTable = importable_factory()
             logging.debug(f"{columns=}")
 
             # Todo: Figure out a way to keep track of errors and warnings, including invalid lines

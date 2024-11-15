@@ -193,7 +193,7 @@ def convert(verbose: int | None, csv_files: list[str], target_spec: str, config:
 
     result = ImporTable(fields)
     for csv_file in csv_files:
-        importable = import_csv_with_spec_detection(csv_file, registry, importable_factory=result)
+        importable = import_csv_with_spec_detection(csv_file, registry, importable_factory=result.clone_empty)
         if not importable:
             print(f"--- importing from {csv_file} yields nothing ---")
             continue
