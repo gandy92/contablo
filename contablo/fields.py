@@ -121,7 +121,7 @@ class DateFieldSpec:
         else:
             dt = datetime.datetime.fromisoformat(value)
 
-        return dt.date()
+        return dt.date() if dt is not None else None
 
 
 @dataclass
