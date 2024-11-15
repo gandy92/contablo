@@ -23,6 +23,10 @@ class FieldSpec(Protocol):
 
     @staticmethod
     def convert(value: str, format: str) -> Any:
+        """Convert the text value from provided string format (if applicable) to native type.
+
+        Return type may be None if conversion fails.
+        """
         pass
 
 
@@ -120,7 +124,7 @@ class DateFieldSpec:
         else:
             dt = datetime.datetime.fromisoformat(value)
 
-        return dt.date() if dt is not None else None
+        return dt.date()  # if dt is not None else None
 
 
 @dataclass
