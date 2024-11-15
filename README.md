@@ -1,8 +1,8 @@
 # ConTabLo
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Description
-
 **ConTabLo** is a python package providing a **Con**figurable **Tab**le **Lo**ader.
 
 With ConTabLo, it is possible to define import configurations for a number of different CSV file formats with the goal to import them into a defined table format, with defined data types for each column. Given a number of configurations, each CSV file can be matched to its configuration via meta data like delimiter, file format and column headers.
