@@ -1,5 +1,5 @@
 import datetime
-from decimal import Decimal as RP2Decimal
+from decimal import Decimal
 
 import pytest
 
@@ -80,8 +80,8 @@ from .defs_fields import match_rules
             [""],  # ignore_undef
             True,
         ),
-        (  # 7: ignore works with RP2Decimal
-            {"A": 0, "B": RP2Decimal("1.0"), "C": None},  # left
+        (  # 7: ignore works with Decimal
+            {"A": 0, "B": Decimal("1.0"), "C": None},  # left
             {"A": 0, "B": "", "C": None},  # right
             {"A": "A"},  # match_map
             None,  # ignore_left
@@ -92,7 +92,7 @@ from .defs_fields import match_rules
     ],
 )
 def test_dicts_match_by_map_yields(
-    left: dict[str, int | None] | dict[str, int | str | None] | dict[str, int | RP2Decimal | None],
+    left: dict[str, int | None] | dict[str, int | str | None] | dict[str, int | Decimal | None],
     right: dict[str, int | None] | dict[str, int | str | None],
     match_map: dict[str, str],
     ignore_left: None | list[str],
@@ -132,7 +132,7 @@ def test_importable_merge_two_swap_with_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("41.00000000"),
+            "asset_amount": Decimal("41.00000000"),
             "asset_currency": "ASSET5",
         },
         {
@@ -140,14 +140,14 @@ def test_importable_merge_two_swap_with_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
             "tx_type": "SWAP",
-            "quote_amount": RP2Decimal("-16.09250000"),
+            "quote_amount": Decimal("-16.09250000"),
             "quote_currency": "ASSET4",
         },
         {
             "imported_from": "sub0-sub1:test:3",
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
-            "fee_amount": RP2Decimal("-0.04100000"),
+            "fee_amount": Decimal("-0.04100000"),
             "fee_currency": "ASSET5",
         },
     ]
@@ -164,11 +164,11 @@ def test_importable_merge_two_swap_with_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("41.00000000"),
+            "asset_amount": Decimal("41.00000000"),
             "asset_currency": "ASSET5",
-            "quote_amount": RP2Decimal("-16.09250000"),
+            "quote_amount": Decimal("-16.09250000"),
             "quote_currency": "ASSET4",
-            "fee_amount": RP2Decimal("-0.04100000"),
+            "fee_amount": Decimal("-0.04100000"),
             "fee_currency": "ASSET5",
         },
     ]
@@ -182,7 +182,7 @@ def test_importable_merge_one_swap_with_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("41.00000000"),
+            "asset_amount": Decimal("41.00000000"),
             "asset_currency": "ASSET5",
         },
         {
@@ -190,14 +190,14 @@ def test_importable_merge_one_swap_with_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
             "tx_type": "SWAP",
-            "quote_amount": RP2Decimal("-16.09250000"),
+            "quote_amount": Decimal("-16.09250000"),
             "quote_currency": "ASSET4",
         },
         {
             "imported_from": "sub0-sub1:test:3",
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
-            "fee_amount": RP2Decimal("-0.04100000"),
+            "fee_amount": Decimal("-0.04100000"),
             "fee_currency": "ASSET5",
         },
     ]
@@ -212,11 +212,11 @@ def test_importable_merge_one_swap_with_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 21:13:39",
             "tx_datetime": datetime.datetime(2023, 1, 17, 21, 13, 39),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("41.00000000"),
+            "asset_amount": Decimal("41.00000000"),
             "asset_currency": "ASSET5",
-            "quote_amount": RP2Decimal("-16.09250000"),
+            "quote_amount": Decimal("-16.09250000"),
             "quote_currency": "ASSET4",
-            "fee_amount": RP2Decimal("-0.04100000"),
+            "fee_amount": Decimal("-0.04100000"),
             "fee_currency": "ASSET5",
         },
     ]
@@ -230,7 +230,7 @@ def test_importable_merge_one_two_swaps_no_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-23 15:33:20",
             "tx_datetime": datetime.datetime(2023, 1, 23, 15, 33, 20),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("24.90000000"),
+            "asset_amount": Decimal("24.90000000"),
             "asset_currency": "ASSET3",
         },
         {
@@ -238,7 +238,7 @@ def test_importable_merge_one_two_swaps_no_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-23 15:33:20",
             "tx_datetime": datetime.datetime(2023, 1, 23, 15, 33, 20),
             "tx_type": "SWAP",
-            "quote_amount": RP2Decimal("-43.27620000"),
+            "quote_amount": Decimal("-43.27620000"),
             "quote_currency": "ASSET1",
         },
         {
@@ -246,7 +246,7 @@ def test_importable_merge_one_two_swaps_no_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-25 00:01:28",
             "tx_datetime": datetime.datetime(2023, 1, 25, 0, 1, 28),
             "tx_type": "SWAP",
-            "quote_amount": RP2Decimal("41.90670000"),
+            "quote_amount": Decimal("41.90670000"),
             "quote_currency": "ASSET1",
         },
         {
@@ -254,7 +254,7 @@ def test_importable_merge_one_two_swaps_no_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-25 00:01:28",
             "tx_datetime": datetime.datetime(2023, 1, 25, 0, 1, 28),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("-24.90000000"),
+            "asset_amount": Decimal("-24.90000000"),
             "asset_currency": "ASSET3",
         },
     ]
@@ -269,9 +269,9 @@ def test_importable_merge_one_two_swaps_no_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-23 15:33:20",
             "tx_datetime": datetime.datetime(2023, 1, 23, 15, 33, 20),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("24.90000000"),
+            "asset_amount": Decimal("24.90000000"),
             "asset_currency": "ASSET3",
-            "quote_amount": RP2Decimal("-43.27620000"),
+            "quote_amount": Decimal("-43.27620000"),
             "quote_currency": "ASSET1",
         },
         {
@@ -279,9 +279,9 @@ def test_importable_merge_one_two_swaps_no_fee():
             "tx_reference": "sub0-554122933-Sub1-2023-01-25 00:01:28",
             "tx_datetime": datetime.datetime(2023, 1, 25, 0, 1, 28),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("-24.90000000"),
+            "asset_amount": Decimal("-24.90000000"),
             "asset_currency": "ASSET3",
-            "quote_amount": RP2Decimal("41.90670000"),
+            "quote_amount": Decimal("41.90670000"),
             "quote_currency": "ASSET1",
         },
     ]
@@ -294,7 +294,7 @@ def test_importable_merge_one_swap_with_fee_and_refund():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 02:02:32",
             "tx_datetime": datetime.datetime(2023, 1, 17, 2, 2, 32),
             "tx_type": "SWAP",
-            "quote_amount": RP2Decimal("-15.37900000"),
+            "quote_amount": Decimal("-15.37900000"),
             "quote_currency": "ASSET4",
         },
         {
@@ -302,21 +302,21 @@ def test_importable_merge_one_swap_with_fee_and_refund():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 02:02:32",
             "tx_datetime": datetime.datetime(2023, 1, 17, 2, 2, 32),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("0.91000000"),
+            "asset_amount": Decimal("0.91000000"),
             "asset_currency": "ASSET0",
         },
         {
             "imported_from": "sub0-sub1:test:3",
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 02:02:32",
             "tx_datetime": datetime.datetime(2023, 1, 17, 2, 2, 32),
-            "refund_amount": RP2Decimal("0.00009100"),
+            "refund_amount": Decimal("0.00009100"),
             "refund_currency": "ASSET0",
         },
         {
             "imported_from": "sub0-sub1:test:4",
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 02:02:32",
             "tx_datetime": datetime.datetime(2023, 1, 17, 2, 2, 32),
-            "fee_amount": RP2Decimal("-0.00091000"),
+            "fee_amount": Decimal("-0.00091000"),
             "fee_currency": "ASSET0",
         },
     ]
@@ -331,13 +331,13 @@ def test_importable_merge_one_swap_with_fee_and_refund():
             "tx_reference": "sub0-554122933-Sub1-2023-01-17 02:02:32",
             "tx_datetime": datetime.datetime(2023, 1, 17, 2, 2, 32),
             "tx_type": "SWAP",
-            "asset_amount": RP2Decimal("0.91000000"),
+            "asset_amount": Decimal("0.91000000"),
             "asset_currency": "ASSET0",
-            "quote_amount": RP2Decimal("-15.37900000"),
+            "quote_amount": Decimal("-15.37900000"),
             "quote_currency": "ASSET4",
-            "fee_amount": RP2Decimal("-0.00091000"),
+            "fee_amount": Decimal("-0.00091000"),
             "fee_currency": "ASSET0",
-            "refund_amount": RP2Decimal("0.00009100"),
+            "refund_amount": Decimal("0.00009100"),
             "refund_currency": "ASSET0",
         }
     ]
@@ -359,7 +359,7 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "asset_amount": RP2Decimal("-0.50000000"),
+                "asset_amount": Decimal("-0.50000000"),
                 "asset_currency": "ASSET2",
                 "_allow_add": True,
             },
@@ -368,7 +368,7 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "asset_amount": RP2Decimal("-0.50000000"),
+                "asset_amount": Decimal("-0.50000000"),
                 "asset_currency": "ASSET2",
                 "_allow_add": True,
             },
@@ -379,7 +379,7 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "quote_amount": RP2Decimal("23.71764800"),
+                "quote_amount": Decimal("23.71764800"),
                 "quote_currency": "ASSET1",
                 "_allow_add": True,
             },
@@ -388,9 +388,9 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "asset_amount": RP2Decimal("-0.50000000"),
+                "asset_amount": Decimal("-0.50000000"),
                 "asset_currency": "ASSET2",
-                "quote_amount": RP2Decimal("23.71764800"),
+                "quote_amount": Decimal("23.71764800"),
                 "quote_currency": "ASSET1",
                 "_allow_add": True,
             },
@@ -401,7 +401,7 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "quote_amount": RP2Decimal("0.00145400"),
+                "quote_amount": Decimal("0.00145400"),
                 "quote_currency": "ASSET1",
                 "_allow_add": True,
             },
@@ -410,9 +410,9 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "asset_amount": RP2Decimal("-0.50000000"),
+                "asset_amount": Decimal("-0.50000000"),
                 "asset_currency": "ASSET2",
-                "quote_amount": RP2Decimal("23.71764800") + RP2Decimal("0.00145400"),
+                "quote_amount": Decimal("23.71764800") + Decimal("0.00145400"),
                 "quote_currency": "ASSET1",
                 "_allow_add": True,
             },
@@ -423,7 +423,7 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "asset_amount": RP2Decimal("-8156.00000000"),
+                "asset_amount": Decimal("-8156.00000000"),
                 "asset_currency": "ASSET2",
                 "_allow_add": True,
             },
@@ -432,9 +432,9 @@ def test_importable_merge_can_add_subtrades():
                 "tx_reference": "sub0-554122933-Sub1-2023-01-18 16:00:24",
                 "tx_datetime": datetime.datetime(2023, 1, 18, 16, 0, 24),
                 "tx_type": "SWAP",
-                "asset_amount": RP2Decimal("-0.50000000") + RP2Decimal("-8156.00000000"),
+                "asset_amount": Decimal("-0.50000000") + Decimal("-8156.00000000"),
                 "asset_currency": "ASSET2",
-                "quote_amount": RP2Decimal("23.71764800") + RP2Decimal("0.00145400"),
+                "quote_amount": Decimal("23.71764800") + Decimal("0.00145400"),
                 "quote_currency": "ASSET1",
                 "_allow_add": True,
             },

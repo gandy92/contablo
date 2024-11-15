@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from decimal import Decimal as RP2Decimal
+from decimal import Decimal
 from typing import Any
 from typing import Protocol
 
@@ -17,8 +17,8 @@ def is_undef(value: Any, ignore_undef):
     if not ignore_undef:
         return False
     for item in ignore_undef:
-        if isinstance(value, RP2Decimal):
-            return RP2Decimal is None
+        if isinstance(value, Decimal):
+            return Decimal is None
         if isinstance(value, type(item)):
             if value == item:
                 return True
