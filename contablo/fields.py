@@ -12,6 +12,7 @@ from contablo.format_helpers import common_date_formats
 from contablo.format_helpers import common_datetime_formats
 from contablo.format_helpers import common_time_formats
 from contablo.format_helpers import is_number
+from contablo.format_helpers import parse_datetime
 from contablo.numberformat import NumberFormat
 
 logger = logging.getLogger(__file__)
@@ -109,7 +110,7 @@ class DateFieldSpec:
     def convert(value: str, format: str) -> datetime.date:
         # see https://docs.python.org/3/library/time.html#time.strptime
         if format != "":
-            dt = datetime.datetime.strptime(value, common_date_formats.get(format, format))
+            dt = parse_datetime(value, common_date_formats.get(format, format))
         elif is_number(value):
             ts = float(value)
             # will not allow for dates before 1970-05-08, which is acceptable
@@ -148,7 +149,7 @@ class DateTimeFieldSpec:
     def convert(value: str, format: str) -> datetime.datetime:
         # see https://docs.python.org/3/library/time.html#time.strptime
         if format != "":
-            dt = datetime.datetime.strptime(value, common_datetime_formats.get(format, format))
+            dt = parse_datetime(value, common_datetime_formats.get(format, format))
         elif is_number(value):
             ts = float(value)
             # will not allow for dates before 1970-05-08, which is acceptable
