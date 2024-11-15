@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 from typing import Protocol
-from typing import runtime_checkable
 
 from contablo.format_helpers import common_date_formats
 from contablo.format_helpers import common_datetime_formats
