@@ -43,7 +43,7 @@ class ImporTable:
         return len(self.data_vector)
 
     def clone_empty(self) -> ImporTable:
-        return ImporTable(self.fields_list)
+        return ImporTable(self.fields_list.copy())
 
     def get_columns(self) -> list[str]:
         return [c for c in self.columns]
