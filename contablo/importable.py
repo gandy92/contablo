@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 from typing import Callable
 
 import pydantic
+from arithmetic_expressions import Expression
 
 from contablo.fields import FieldSpec
 from contablo.match import dicts_equal_in_keys
+
+logger = logging.getLogger(__file__)
 
 
 class ImportDatum(pydantic.BaseModel):
@@ -35,15 +39,33 @@ class ImporTable:
 
     def __init__(self, fields: list[FieldSpec]) -> None:
         self.fields_list: list[FieldSpec] = fields
-        self.fields = {t.name: t for t in self.fields_list}
-        self.columns = [t.name for t in self.fields_list]  # all of these will be used to check for duplicates
+        self.extra_fields_list: list[FieldSpec] = []
+        self.transforms: dict[str, Expression] = {}
         self.data_vector: list[dict[str, Any]] = []  # see self.columns for valid keys
+
+    @property
+    def fields(self) -> dict[str, FieldSpec]:
+        return {t.name: t for t in self.fields_list + self.extra_fields_list}
+
+    @property
+    def columns(self) -> list[str]:
+        return [t.name for t in self.fields_list + self.extra_fields_list]
+
+    @property
+    def export_columns(self) -> list[str]:
+        return [t.name for t in self.fields_list]
 
     def __len__(self) -> int:
         return len(self.data_vector)
 
     def clone_empty(self) -> ImporTable:
         return ImporTable(self.fields_list.copy())
+
+    def add_extra_fields(self, fields: list[FieldSpec]) -> None:
+        self.extra_fields_list = fields
+
+    def add_transforms(self, transforms: dict[str, str]) -> None:
+        self.transforms.update({k: Expression.parse(v) for k, v in transforms.items()})
 
     def get_columns(self) -> list[str]:
         return [c for c in self.columns]
@@ -104,12 +126,16 @@ class ImporTable:
             try:
                 data[field] = self.fields[field].convert(datum.raw_value, datum.format)
             except (AssertionError, ValueError) as e:
+                logger.exception(e)
                 errors.append(f"{e} for {field=} and {datum=}")
         if errors:
             print("** Errors:")
             for error in errors:
                 print(f"   {error}")
             raise ImportError("There were errors while adding data")  # raise a more appropriate Exception
+
+        for column, expression in self.transforms.items():
+            data[column] = expression.evaluate(**data)
 
         self.data_vector.append(data)
 

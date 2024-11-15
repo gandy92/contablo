@@ -1,6 +1,7 @@
 import logging
 
 from contablo.csv_helper import load_chunked_textfile
+from contablo.fields import FieldSpecRegistry
 from contablo.format_helpers import format_implicit
 from contablo.format_helpers import guess_separator
 from contablo.importable import ImporTable
@@ -74,7 +75,12 @@ def import_csv_with_spec_detection(
     return result
 
 
-def import_csv_with_spec(csv_file: str, import_spec: ImportSpec, importable_factory: ImporTable) -> ImporTable | None:
+def import_csv_with_spec(
+    csv_file: str,
+    import_spec: ImportSpec,
+    importable_factory: ImporTable,
+    registry: FieldSpecRegistry,
+) -> ImporTable | None:
     """Import a single csv file with the given spec
 
     If the file content does not match the spec, the import will fail
@@ -100,6 +106,9 @@ def import_csv_with_spec(csv_file: str, import_spec: ImportSpec, importable_fact
             logging.info("Columns match, proceeding with import.")
 
             importable: ImporTable = importable_factory()
+            importable.add_extra_fields(registry.make_spec_list(import_spec.fields))
+            importable.add_transforms(import_spec.transforms)
+
             logging.debug(f"{columns=}")
 
             # Todo: Figure out a way to keep track of errors and warnings, including invalid lines
