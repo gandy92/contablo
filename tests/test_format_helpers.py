@@ -39,6 +39,7 @@ def test_is_number_yields(number, expected):
         ("14 Aug 2024 10:22:41", "%d %B %Y %H:%M:%S", datetime.datetime(2024, 8, 14, 10, 22, 41)),
         ("14 Jun 2024 10:28:55", "%d %B %Y %H:%M:%S", datetime.datetime(2024, 6, 14, 10, 28, 55)),
         ("14 Jun 2024 10:29:44", "%d %B %Y %H:%M:%S", datetime.datetime(2024, 6, 14, 10, 29, 44)),
+        ("2 Nov 2023 15:42:24", "%d %B %Y %H:%M:%S", datetime.datetime(2023, 11, 2, 15, 42, 24)),
     ],
 )
 def test_parse_datetime(sample, format, expected):

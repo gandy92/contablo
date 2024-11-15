@@ -45,6 +45,18 @@ def test_decimal_field_spec_convert_yields(value, format, expected):
         ("2023-11-13", "", datetime.date(2023, 11, 13)),
         ("1714938611", "", datetime.date(2024, 5, 5)),
         ("1714938611.0", "", datetime.date(2024, 5, 5)),
+        ("05. Februar 2024", "%d %B %Y", datetime.date(2024, 2, 5)),
+        ("07. August 2024", "%d %B %Y", datetime.date(2024, 8, 7)),
+        ("07. Mai 2024", "%d %B %Y", datetime.date(2024, 5, 7)),
+        ("07. May 2024", "%d %B %Y", datetime.date(2024, 5, 7)),
+        ("09. August 2024", "%d %B %Y", datetime.date(2024, 8, 9)),
+        ("10. Juli 2024", "%d %B %Y", datetime.date(2024, 7, 10)),
+        ("10 Okt 2024", "%d %B %Y", datetime.date(2024, 10, 10)),
+        ("11 Jun 2024", "%d %B %Y", datetime.date(2024, 6, 11)),
+        ("11 Okt 2024", "%d %B %Y", datetime.date(2024, 10, 11)),
+        ("12 Mrz 2024", "%d %B %Y", datetime.date(2024, 3, 12)),
+        ("16 Aug 2024", "%d %B %Y", datetime.date(2024, 8, 16)),
+        ("16 Okt 2024", "%d %B %Y", datetime.date(2024, 10, 16)),
     ],
 )
 def test_date_field_spec_convert_yields(value, format, expected):
@@ -71,6 +83,11 @@ def test_time_field_spec_convert_yields(value, format, expected):
         ("1714938611000000.0", "", datetime.datetime(2024, 5, 5, 21, 50, 11)),
         ("1714938611000000000.0", "", datetime.datetime(2024, 5, 5, 21, 50, 11)),
         # Todo: Add more tests with TZ format and custom strptime formats
+        ("1 Okt 2024 13:05:20", "%d %B %Y %H:%M:%S", datetime.datetime(2024, 10, 1, 13, 5, 20)),
+        ("14 Aug 2024 10:22:41", "%d %B %Y %H:%M:%S", datetime.datetime(2024, 8, 14, 10, 22, 41)),
+        ("14 Jun 2024 10:28:55", "%d %B %Y %H:%M:%S", datetime.datetime(2024, 6, 14, 10, 28, 55)),
+        ("14 Jun 2024 10:29:44", "%d %B %Y %H:%M:%S", datetime.datetime(2024, 6, 14, 10, 29, 44)),
+        ("2 Nov 2023 15:42:24", "%d %B %Y %H:%M:%S", datetime.datetime(2023, 11, 2, 15, 42, 24)),
     ],
 )
 def test_datetime_field_spec_convert_yields(value, format, expected):
