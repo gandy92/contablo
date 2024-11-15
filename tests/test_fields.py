@@ -1,5 +1,5 @@
 import datetime
-from decimal import Decimal as RP2Decimal
+from decimal import Decimal
 
 import pytest
 
@@ -29,7 +29,7 @@ def test_int_field_spec_convert_yields(value, format, expected):
 @pytest.mark.parametrize(
     "value, format, expected",
     [
-        ("+1.234,55", "+1.000,00", RP2Decimal("1234.55")),
+        ("+1.234,55", "+1.000,00", Decimal("1234.55")),
     ],
 )
 def test_decimal_field_spec_convert_yields(value, format, expected):

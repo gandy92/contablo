@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import logging
 from dataclasses import dataclass
-from decimal import Decimal as RP2Decimal
+from decimal import Decimal
 from typing import Any
 from typing import Protocol
 from typing import runtime_checkable
@@ -94,9 +94,9 @@ class DecimalFieldSpec:
     type: str = "number"
 
     @staticmethod
-    def convert(value: str, format: str) -> RP2Decimal:
+    def convert(value: str, format: str) -> Decimal:
         fmt = NumberFormat.from_format(format)
-        return RP2Decimal(fmt.normalize(value))
+        return Decimal(fmt.normalize(value))
 
 
 @dataclass
