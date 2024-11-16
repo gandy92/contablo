@@ -57,7 +57,7 @@ class ImportSpec(StrictAttribBaseModel):
     # Todo: formats: dict[str, str] = {}  # default formats for types (number, date, time, datetime) or specific column labels
     columns: list[ImportColumnSpec] = []
     fields: list[dict[str, str]] = []
-    transforms: dict[str, str] = []
+    transforms: dict[str, str] = {}
 
     @property
     def column_labels(self):
