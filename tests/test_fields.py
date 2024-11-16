@@ -27,6 +27,31 @@ def test_int_field_spec_convert_yields(value, format, expected):
 
 
 @pytest.mark.parametrize(
+    "cls, kwargs",  # provide args required to succesfully create a class instance
+    [
+        (BoolFieldSpec, dict(name="test", help="")),
+        (DateFieldSpec, dict(name="test", help="")),
+        (DateTimeFieldSpec, dict(name="test", help="")),
+        (DecimalFieldSpec, dict(name="test", help="")),
+        (EnumFieldSpec, dict(name="test", help="", items=["one", "two"])),
+        (IntFieldSpec, dict(name="test", help="")),
+        (StringFieldSpec, dict(name="test", help="")),
+        (TimeFieldSpec, dict(name="test", help="")),
+    ],
+)
+def test_builtin_field_spec_rejects_overrides(cls, kwargs):
+    for protected in ["type", "zero"]:
+        kwargs[protected] = "wrong"
+        try:
+            cls(**kwargs)
+        except TypeError as e:
+            if "unexpected keyword argument" not in str(e):
+                raise
+        else:
+            raise AssertionError(f"{cls}.__init__() should reject argument {protected}.")
+
+
+@pytest.mark.parametrize(
     "value, format, expected",
     [
         ("+1.234,55", "+1.000,00", Decimal("1234.55")),
