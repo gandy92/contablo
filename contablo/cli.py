@@ -187,13 +187,13 @@ def convert(verbose: int | None, csv_files: list[str], target_spec: str, config:
     # Initialize target table's field specs from json file. See specs/fieldspec-banking.json for an example.
     # Refer to contablo.fields.ImportSpec subclasses for available types and attributes.
     with open(target_spec) as target_spec_file:
-        fieldspecs = FieldSpecRegistry()
-        add_builtin_fieldspecs_to_registry(fieldspecs)
-        fields = fieldspecs.make_spec_list(json.load(target_spec_file))
+        field_spec_registry = FieldSpecRegistry()
+        add_builtin_fieldspecs_to_registry(field_spec_registry)
+        fields = field_spec_registry.make_spec_list(json.load(target_spec_file))
 
     result = ImporTable(fields)
     for csv_file in csv_files:
-        importable = import_csv_with_spec_detection(csv_file, registry, importable_factory=result.clone_empty)
+        importable = import_csv_with_spec_detection(csv_file, registry, result.clone_empty, field_spec_registry)
         if not importable:
             print(f"--- importing from {csv_file} yields nothing ---")
             continue
