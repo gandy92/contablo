@@ -1,7 +1,8 @@
-from glob import glob
 import json
-from pytest import TempdirFactory
+from glob import glob
+
 from click.testing import CliRunner
+from pytest import TempdirFactory
 
 from contablo.cli import cli
 
@@ -28,7 +29,7 @@ def test_mk_import_template():
     ]
     file_data = {}
     for filename in files:
-        with open(f"tests/{filename}", "r") as f:
+        with open(f"tests/{filename}") as f:
             file_data[filename] = f.readlines()
 
     with runner.isolated_filesystem():
