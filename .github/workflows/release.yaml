@@ -14,7 +14,7 @@ env:
 
 jobs:
   unit-test:
-    uses: gandy92/contablo/.github/workflows/test.yaml@main
+    uses: gandy92/contablo/.github/workflows/test.yaml@master
 
   details:
     runs-on: ubuntu-latest
