@@ -13,12 +13,12 @@ env:
   OWNER: "gandy92"
 
 jobs:
-  # unit-test:
-  #   uses: gandy92/contablo/.github/workflows/test.yaml@main
+  unit-test:
+    uses: gandy92/contablo/.github/workflows/test.yaml@main
 
   details:
     runs-on: ubuntu-latest
-    # needs: unit-test
+    needs: unit-test
     outputs:
       new_version: ${{ steps.release.outputs.new_version }}
       suffix: ${{ steps.release.outputs.suffix }}
@@ -180,7 +180,7 @@ jobs:
           git push origin version-bump-to-$NEW_VERSION
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v7
         with:
           branch: version-bump-${{ needs.details.outputs.new_version }}
           title: "Bump version to ${{ needs.details.outputs.new_version }}"
