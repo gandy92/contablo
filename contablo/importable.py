@@ -135,9 +135,20 @@ class ImporTable:
             raise ImportError("There were errors while adding data")  # raise a more appropriate Exception
 
         for column, expression in self.transforms.items():
-            data[column] = expression.evaluate(**data)
+            data[column] = self.evaluate(expression, data)
 
         self.data_vector.append(data)
+
+    def evaluate(self, expression: Expression, data: dict[str, Any]) -> Any:
+        """Evaluate the expression in a safe context, where missing values are replaced with zero."""
+        context = {k: data.get(k, v.zero) for k, v in self.fields.items() if v.zero is not None}
+        # Todo: package arithmetic_expressions is missing a method to start out with a clean context.
+        # Since the arithmetic engine is a singleton and the default context is updated with each evaluate() call,
+        # previous variables are remembered. This is a problem if a previous importable had a field defined which
+        # the current importable is missing: The previous variable value is still stored in the context and used in
+        # the expression without raising a arithmetic_expressions.engine.UndefinedVariableError
+        expression.engine._default_context.clear()
+        return expression.evaluate(**context)
 
     def merge_in(self, other: ImporTable):
         """Merge another importable into this one while dropping duplicates.
