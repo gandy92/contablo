@@ -45,14 +45,17 @@ def make_field_import_datum_dict(
 
 
 def import_csv_with_spec_detection(
-    csv_file: str, import_spec_registry: ImportSpecRegistry, importable_factory: ImporTable
+    csv_file: str,
+    import_spec_registry: ImportSpecRegistry,
+    importable_factory: ImporTable,
+    field_spec_registry: FieldSpecRegistry,
 ) -> ImporTable | None:
     result: ImporTable = None
     found_specs = set()
     for spec in import_spec_registry.iter_specs():
         found = None
         try:
-            found = import_csv_with_spec(csv_file, spec, importable_factory=importable_factory)
+            found = import_csv_with_spec(csv_file, spec, importable_factory, field_spec_registry)
         except ImportColumnMismatchError:
             pass
         except Exception as e:
