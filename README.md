@@ -1,6 +1,7 @@
 # ConTabLo
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![release](https://github.com/gandy92/contablo/actions/workflows/release.yaml/badge.svg)](https://github.com/gandy92/contablo/actions/workflows/release.yaml)
 
 ## Description
 **ConTabLo** is a python package providing a **Con**figurable **Tab**le **Lo**ader.
