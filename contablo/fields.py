@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime
 import logging
 from dataclasses import dataclass
+from dataclasses import field
 from decimal import Decimal
 from typing import Any
 from typing import Protocol
@@ -18,8 +19,26 @@ logger = logging.getLogger(__file__)
 
 
 class FieldSpec(Protocol):
+    """Interface for a field type specification.
+
+    A field type specification is a class representing a field type that can be converted from a string.
+    Objects of a class that implement this protocol have a property name (aka table column name) and a type
+    description (e.g. "string" for the StringFieldSpec or "number" for the DecimalFieldSpec).
+
+    The class method convert() allows to convert a string to the native type (e.g. str for StringFieldSpec or
+    Decimal for StringFieldSpec), according to an optional format string that informs about how to interpret
+    the textual value; see DateFieldSpec or DecimalFieldSpec for examples.  Types that are unsuitable for numeric
+    expressions shall set the zero poperty to None.
+
+    Types that are applicable to be used in expressions shall have a "zero" property of the respective type
+    representing a zero value, e.g. int(0) or Decimal("0.0").
+
+    Additinal properties may be required for each DieldSpec class to properly initialize and use a class object.
+    """
+
     name: str
     type: str
+    zero: Any
 
     @staticmethod
     def convert(value: str, format: str) -> Any:
@@ -50,7 +69,8 @@ def is_field_spec_class(cls) -> bool:
 class StringFieldSpec:
     name: str
     help: str
-    type: str = "string"
+    type: str = field(default="string", init=False)
+    zero: None = field(default=None, init=False)
 
     @staticmethod
     def convert(value: str, format: str) -> str:
@@ -62,7 +82,8 @@ class EnumFieldSpec:
     name: str
     help: str
     items: list[str]
-    type: str = "enum"
+    type: str = field(default="enum", init=False)
+    zero: None = field(default=None, init=False)
 
     def convert(self, value: str, format: str) -> str:
         assert value in self.items, f"Unknown item <{value}>, expecting of of {self.items}"
@@ -73,7 +94,8 @@ class EnumFieldSpec:
 class IntFieldSpec:
     name: str
     help: str
-    type: str = "integer"
+    type: str = field(default="integer", init=False)
+    zero: int = field(default=0, init=False)
 
     @staticmethod
     def convert(value: str, format: str) -> int:
@@ -84,7 +106,8 @@ class IntFieldSpec:
 class BoolFieldSpec:
     name: str
     help: str
-    type: str = "boolean"
+    type: str = field(default="boolean", init=False)
+    zero: int = field(default=0, init=False)
 
     @staticmethod
     def convert(value: str, format: str) -> bool:
@@ -95,7 +118,8 @@ class BoolFieldSpec:
 class DecimalFieldSpec:
     name: str
     help: str
-    type: str = "number"
+    type: str = field(default="number", init=False)
+    zero: Decimal = field(default=Decimal("0"), init=False)
 
     @staticmethod
     def convert(value: str, format: str) -> Decimal:
@@ -107,7 +131,8 @@ class DecimalFieldSpec:
 class DateFieldSpec:
     name: str
     help: str
-    type: str = "date"
+    type: str = field(default="date", init=False)
+    zero: None = field(default=None, init=False)
 
     @staticmethod
     def convert(value: str, format: str) -> datetime.date:
@@ -131,7 +156,8 @@ class DateFieldSpec:
 class TimeFieldSpec:
     name: str
     help: str
-    type: str = "time"
+    type: str = field(default="time", init=False)
+    zero: None = field(default=None, init=False)
 
     @staticmethod
     def convert(value: str, format: str) -> datetime.time:
@@ -146,7 +172,8 @@ class TimeFieldSpec:
 class DateTimeFieldSpec:
     name: str
     help: str
-    type: str = "datetime"
+    type: str = field(default="datetime", init=False)
+    zero: None = field(default=None, init=False)
 
     @staticmethod
     def convert(value: str, format: str) -> datetime.datetime:
