@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from contablo.format_helpers import get_date_strptime_from_format
 from contablo.format_helpers import get_time_strptime_from_format
@@ -18,7 +17,7 @@ def dicts_equal_in_keys(a, b, compared_keys):
     return ka == kb and all(a[k] == b[k] for k in ka)
 
 
-def match_to_template(text: str, template: str, strict_whitespace: bool = False) -> Optional[dict[str, str]]:
+def match_to_template(text: str, template: str, strict_whitespace: bool = False) -> dict[str, str] | None:
     import re
 
     pattern = re.escape(template)
