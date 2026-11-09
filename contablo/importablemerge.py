@@ -10,7 +10,7 @@ logger = logging.getLogger(__file__)
 
 
 class AssetLookup(Protocol):
-    def lookup_symbol(isin_or_wkn: str) -> str: ...
+    def lookup_symbol(self, isin_or_wkn: str) -> str: ...
 
 
 def is_undef(value: Any, ignore_undef):
@@ -28,10 +28,10 @@ def is_undef(value: Any, ignore_undef):
 def dicts_match_by_map(
     left: dict[str, Any],
     right: dict[str, Any],
-    match_map: dict[str, str] = None,
-    ignore_left: list[str] = None,
-    ignore_right: list[str] = None,
-    ignore_undef: list[Any] = None,
+    match_map: dict[str, str] | None = None,
+    ignore_left: list[str] | None = None,
+    ignore_right: list[str] | None = None,
+    ignore_undef: list[Any] | None = None,
 ) -> bool:
     """Check if two dicts match, considering a subset of dict keys.
     Keys can be mapped between the two dicts.
@@ -91,9 +91,9 @@ def pick_one(
     left: list[dict[str, Any]],
     right: dict[str, Any],
     match_map: dict[str, str],
-    ignore_left: list[str] = None,
-    ignore_right: list[str] = None,
-    ignore_values: list[Any] = None,
+    ignore_left: list[str] | None = None,
+    ignore_right: list[str] | None = None,
+    ignore_values: list[Any] | None = None,
     *,
     remove_match: bool = False,
 ) -> dict[str, Any]:
@@ -101,7 +101,7 @@ def pick_one(
 
     match_map dictates, which keys from "right" (key) must match keys in "left" (value).
     """
-    match_idx = set()
+    match_idx: set[int] = set()
     for idx, row in enumerate(left):
         if dicts_match_by_map(row, right, match_map, ignore_left, ignore_right, ignore_values):
             match_idx.add(idx)
@@ -126,7 +126,7 @@ class LeftRightMatchRule:
     ignored_fields: list[str]
 
 
-def already_in(from_data: dict[str, str], to_data: dict[str, str], ignore_keys: list[str], undef: list[str]):
+def already_in(from_data: dict[str, Any], to_data: dict[str, Any], ignore_keys: list[str], undef: list[Any]) -> bool:
     for key, value in from_data.items():
         if key in ignore_keys:
             continue
@@ -156,9 +156,9 @@ def importable_merge_two(
 
     tgt = target.data_vector.copy()
     src = source.data_vector.copy()
-    undef = [None, ""]
+    undef: list[Any] = [None, ""]
 
-    def try_merge(match_map: dict[str, str], ignore_keys: list[str]) -> None:
+    def try_merge(match_map: dict[str, str], ignore_keys: list[str]) -> list[dict[str, Any]]:
         rem = []
         if not tgt:
             # print(f"Already finished, skipping {match_map}")
@@ -230,7 +230,8 @@ def importable_merge_one(
     imp = target.clone_empty()
 
     tgt = target.data_vector.copy()
-    undef = [None, ""]
+    undef: list[Any] = [None, ""]
+    merged = False
 
     for match_rule in match_rules:
         match_map, ignore_keys = match_rule.left_right_map, match_rule.ignored_fields
@@ -256,11 +257,11 @@ def importable_merge_one(
                 if match.get(key, None) is not None and item.get(key, None) is not None:
                     match[key] = match[key] + item[key]
         tgt.append(match)
-        item = None
+        merged = True
         break
 
-    # if there was no match, ust append the item as is
-    if item is not None:
+    # if there was no match, just append the item as is
+    if not merged:
         tgt.append(item)
 
     imp.data_vector = tgt
@@ -271,8 +272,8 @@ def importable_merge_one(
 def importable_merge(
     source: ImporTable,
     target: ImporTable,
-    match_rules: list[LeftRightMatchRule] = None,
-    addable_fields: list[str] = None,
+    match_rules: list[LeftRightMatchRule] | None = None,
+    addable_fields: list[str] | None = None,
 ) -> ImporTable:
     result = target
     for item in source.iter_data():
