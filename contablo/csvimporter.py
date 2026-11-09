@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Callable
 
 from contablo.csv_helper import load_chunked_textfile
 from contablo.fields import FieldSpecRegistry
@@ -36,8 +37,8 @@ def make_field_import_datum_dict(
     row_dict: dict[str, str] | None = None,
 ) -> dict[str, ImportDatum]:
     result = {}
-    for field, spec in spec.items():
-        value, format = spec.split(fmt_sep, 1) if fmt_sep in spec else (spec, "")
+    for field, value_spec in spec.items():
+        value, format = value_spec.split(fmt_sep, 1) if fmt_sep in value_spec else (value_spec, "")
         if row_dict is not None:
             value = format_implicit(value, row_dict)
         result[field] = ImportDatum(source_lbl=src_lbl, raw_value=value, format=format)
@@ -47,10 +48,10 @@ def make_field_import_datum_dict(
 def import_csv_with_spec_detection(
     csv_file: str,
     import_spec_registry: ImportSpecRegistry,
-    importable_factory: ImporTable,
+    importable_factory: Callable[[], ImporTable],
     field_spec_registry: FieldSpecRegistry,
 ) -> ImporTable | None:
-    result: ImporTable = None
+    result: ImporTable | None = None
     found_specs = set()
     for spec in import_spec_registry.iter_specs():
         found = None
@@ -81,7 +82,7 @@ def import_csv_with_spec_detection(
 def import_csv_with_spec(
     csv_file: str,
     import_spec: ImportSpec,
-    importable_factory: ImporTable,
+    importable_factory: Callable[[], ImporTable],
     registry: FieldSpecRegistry,
 ) -> ImporTable | None:
     """Import a single csv file with the given spec
@@ -147,7 +148,7 @@ def add_to_importable_using_import_spec(
     # do not fill in defaults, yet - otherwise we get a warning when a default value is overwritten
     field_data: dict[str, ImportDatum] = {}
     raw: str
-    import_spec: ImportColumnSpec
+    spec: ImportColumnSpec
     ignore_labels = []
     for raw, spec in zip(row, import_spec.columns):
         if not raw:
@@ -173,7 +174,7 @@ def add_to_importable_using_import_spec(
             print(f"** Warning: column {label} redefines field {field} already defined by {prev}")
         if spec.map:
             if raw in spec.map:
-                from_raw, raw = raw, spec.map.get(raw)
+                from_raw, raw = raw, spec.map[raw]
                 logger.debug(f"mapping {source}/{spec.label} from {from_raw} to {raw}")
                 columns_mapped.add(spec.label)
 
@@ -189,7 +190,7 @@ def add_to_importable_using_import_spec(
     for raw, spec in zip(row, import_spec.columns):
         if spec.label in ignore_labels:
             continue
-        match_groups: list[dict[str, str]] = []
+        match_groups: list[dict[str, ImportDatum]] = []
         if not spec.match:
             continue
         for rule_idx, rule in enumerate(spec.match):
@@ -203,12 +204,12 @@ def add_to_importable_using_import_spec(
                 if not check_conditions(rule.onlyif, field_dict, row_dict):
                     print(f"** Warning: dropping match #{rule_idx} due to onlyif condition not met.")
                     continue
-            match_data = {}
-            for k, v in data.items():
-                match_data[k] = ImportDatum(source_lbl=k, raw_value=v, format=rule.formats.get(k, ""))
-            for k, v in make_field_import_datum_dict("(matched rule)", rule.implies, "/", row_dict).items():
-                # v.raw_value = format_implicit(v.raw_value, row_dict)  # Todo: if still required, find a better way
-                match_data[k] = v
+            match_data: dict[str, ImportDatum] = {}
+            for k, matched_value in data.items():
+                match_data[k] = ImportDatum(source_lbl=k, raw_value=matched_value, format=rule.formats.get(k, ""))
+            for k, datum in make_field_import_datum_dict("(matched rule)", rule.implies, "/", row_dict).items():
+                # datum.raw_value = format_implicit(datum.raw_value, row_dict)  # Todo: if still required, find a better way
+                match_data[k] = datum
             match_groups.append(match_data)
             # logging.debug(f"      -> {match_groups}")
 
@@ -226,11 +227,11 @@ def add_to_importable_using_import_spec(
             if len(match_groups) > 1:
                 print(f"** Warning: Multiple matches in {source} column {spec.label}. Will use first match.")
             # logging.debug("      -> {match_groups[0]}")
-            for field, value in match_groups[0].items():
+            for field, datum in match_groups[0].items():
                 if field in match_results:
                     prev = match_results[field].source_lbl
                     print(f"** Warning: matched rule redefines field {field} already defined by {prev}")
-                match_results[field] = value
+                match_results[field] = datum
 
     #
     # step 4: merge data from step 3 into step 4, starting with defaults
