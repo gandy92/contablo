@@ -14,6 +14,7 @@ from arithmetic_expressions.engine import UndefinedVariableError
 
 from contablo.csv_helper import ChunkInfo
 from contablo.csv_helper import CsvFileInfo
+from contablo.csv_helper import EmptyFileError
 from contablo.csvimporter import ImportColumnMismatchError
 from contablo.csvimporter import import_csv_with_spec
 from contablo.csvimporter import import_csv_with_spec_detection
@@ -105,10 +106,9 @@ def test_import_does_not_skip_leading_metadata_chunk(tmp_path, factory, field_re
         import_csv_with_spec(csv_file, spec_a, factory, field_registry)
 
 
-def test_import_of_empty_file_fails_on_encoding_detection(tmp_path, factory, field_registry):
-    """Current behavior: libmagic reports an empty file as 'binary', which is no valid codec."""
+def test_import_of_empty_file_raises_empty_file_error(tmp_path, factory, field_registry):
     csv_file = write_csv(tmp_path / "empty.csv", [""])
-    with pytest.raises(LookupError):
+    with pytest.raises(EmptyFileError):
         import_csv_with_spec(csv_file, spec_a, factory, field_registry)
 
 

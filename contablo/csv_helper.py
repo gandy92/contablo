@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import codecs
 import logging
 
 import magic
@@ -8,8 +9,12 @@ import pydantic
 logger = logging.getLogger(__file__)
 
 
-class UnknownEncodingError(Exception):
-    pass
+class UnknownEncodingError(LookupError):
+    """Raised when the encoding of a file cannot be determined or is not a known codec."""
+
+
+class EmptyFileError(UnknownEncodingError):
+    """Raised when a file has no content apart from whitespace, so no encoding can be determined."""
 
 
 def get_file_encoding(filename: str) -> str:
@@ -17,11 +22,18 @@ def get_file_encoding(filename: str) -> str:
 
     with open(filename, "rb") as f:
         blob = f.read()
-        m = magic.Magic(mime_encoding=True)
-        encoding = m.from_buffer(blob)
-        return "utf-8-sig" if encoding == "utf-8" else encoding
 
-    raise UnknownEncodingError(f"Could not figure out encoding of '{filename}'.")
+    if not blob.strip():
+        raise EmptyFileError(f"File '{filename}' is empty.")
+
+    m = magic.Magic(mime_encoding=True)
+    encoding = m.from_buffer(blob)
+    try:
+        codecs.lookup(encoding)
+    except LookupError:
+        raise UnknownEncodingError(f"Could not figure out encoding of '{filename}', got '{encoding}'.") from None
+
+    return "utf-8-sig" if encoding == "utf-8" else encoding
 
 
 def load_chunked_textfile(
