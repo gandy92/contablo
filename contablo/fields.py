@@ -49,7 +49,7 @@ class FieldSpec(Protocol):
         pass
 
 
-def assert_field_spec_class(cls) -> bool:
+def assert_field_spec_class(cls) -> None:
     assert isinstance(cls, type), f"{cls} needs to be a class, not an object"
     assert isinstance(getattr(cls, "type", None), str), f"{cls} requires a member named 'type' of type 'str'"
     assert getattr(cls, "convert", None).__class__.__name__ == "function", f"{cls} requires a function 'convert'."
@@ -149,7 +149,10 @@ class DateFieldSpec:
         else:
             dt = datetime.datetime.fromisoformat(value)
 
-        return dt.date()  # if dt is not None else None
+        if dt is None:
+            # Todo: raise ValueError instead, so that ImporTable.add() reports it like other conversion errors
+            raise AttributeError(f"Cannot convert <{value}> to date using format <{format}>")
+        return dt.date()
 
 
 @dataclass
@@ -176,8 +179,9 @@ class DateTimeFieldSpec:
     zero: None = field(default=None, init=False)
 
     @staticmethod
-    def convert(value: str, format: str) -> datetime.datetime:
+    def convert(value: str, format: str) -> datetime.datetime | None:
         # see https://docs.python.org/3/library/time.html#time.strptime
+        dt: datetime.datetime | None
         if format != "":
             dt = parse_datetime(value, common_datetime_formats.get(format, format))
         elif is_number(value):
@@ -196,9 +200,9 @@ class FieldSpecRegistry:
     """Registry for FieldSpec classes that"""
 
     def __init__(self):
-        self.known_specs: dict[str, type[dataclass]] = {}
+        self.known_specs: dict[str, type[FieldSpec]] = {}
 
-    def add(self, spec: type[dataclass]) -> None:
+    def add(self, spec: type[FieldSpec]) -> None:
         assert_field_spec_class(spec)
         self.known_specs[spec.type] = spec
 

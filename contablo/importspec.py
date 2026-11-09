@@ -108,6 +108,7 @@ class ImportSpecRegistry:
             if spec.matches(info):
                 logger.debug(f"Found match: {spec.label}")
                 return spec
+        return None
 
-    def query_source(self, label: str) -> str:
-        return self.label_source_map.get(label, None)
+    def query_source(self, label: str) -> str | None:
+        return self.label_source_map.get(label)
