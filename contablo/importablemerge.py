@@ -14,6 +14,8 @@ class AssetLookup(Protocol):
 
 
 def is_undef(value: Any, ignore_undef):
+    # Todo: "Decimal is None" is always False, so Decimal values are never undefined, even if listed in ignore_undef.
+    #       Harmless for the [None, ""] lists used by the merge functions; clarify the intended semantics.
     if not ignore_undef:
         return False
     for item in ignore_undef:
