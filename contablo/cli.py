@@ -129,18 +129,18 @@ cli.add_command(mk_import_tmpl)
     help="Write schema to this directory (default: location of input file)",
 )
 @click.argument("schema", nargs=-1)
-def mk_schema(verbose: int | None, output_base: str, schema: str):
+def mk_schema(verbose: int | None, output_base: str, schema: tuple[str, ...]):
     """Create a JSON schema for validation of JSON based config files."""
     # Todo: Add a way to also include valid field names in the schema
     if verbose is not None:
         logging.getLogger().setLevel(log_levels[min(verbose, len(log_levels) - 1)])
 
-    schema: list[str] = list(set(schema))
-    known_schemas: dict[str, pydantic.BaseModel] = {
+    schemas: list[str] = list(set(schema))
+    known_schemas: dict[str, type[pydantic.BaseModel]] = {
         "ImportSpec": ImportSpec,
     }
 
-    for sch in schema:
+    for sch in schemas:
         if sch not in known_schemas:
             print(f"Unknown schema '{sch}', choose one of {known_schemas.keys()}")
             continue
@@ -202,8 +202,8 @@ def convert(verbose: int | None, csv_files: list[str], target_spec: str, config:
 
     if output_file is not None:
         print("Exporting merged data...")
-        with open(output_file, "w") as csv_file:
-            csv_writer = csv.writer(csv_file)
+        with open(output_file, "w") as out:
+            csv_writer = csv.writer(out)
             csv_writer.writerows(result.get_flat_table(convert_func=str, fallback="", include_header=True))
 
 
