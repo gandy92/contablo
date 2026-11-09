@@ -139,9 +139,13 @@ jobs:
           name: dist
           path: dist/
 
+      # actions/checkout may replace the annotated tag by a lightweight one; restore it for --notes-from-tag
+      - name: Fetch annotated tags
+        run: git fetch --force --tags origin
+
       - name: Create GitHub Release
         id: create_release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create ${{ needs.details.outputs.tag_name }} dist/* --title ${{ needs.details.outputs.tag_name }} --generate-notes
+          gh release create ${{ needs.details.outputs.tag_name }} dist/* --title ${{ needs.details.outputs.tag_name }} --notes-from-tag
