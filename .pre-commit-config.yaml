@@ -1,6 +1,40 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
+default_stages: [pre-commit]
+
 repos:
+  # Private wordlist check, see scripts/check-wordlist.sh
+  - repo: local
+    hooks:
+      - id: check-wordlist-files
+        name: check private wordlist (files)
+        entry: scripts/check-wordlist.sh files
+        language: unsupported_script
+        require_serial: true
+        verbose: true
+      - id: check-wordlist-ident
+        name: check private wordlist (identity)
+        entry: scripts/check-wordlist.sh ident
+        language: unsupported_script
+        pass_filenames: false
+        always_run: true
+        verbose: true
+      - id: check-wordlist-msg
+        name: check private wordlist (commit message)
+        entry: scripts/check-wordlist.sh msg
+        language: unsupported_script
+        stages: [commit-msg]
+        verbose: true
+      - id: check-wordlist-push
+        name: check private wordlist (push)
+        entry: scripts/check-wordlist.sh push
+        language: unsupported_script
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true
+        verbose: true
+
   - repo: https://github.com/psf/black
     rev: 24.2.0
     hooks:
