@@ -73,8 +73,14 @@ repos:
     rev: v1.8.0
     hooks:
       - id: mypy
-        files: ^src/
+        files: ^contablo/
         args: []
+        additional_dependencies:
+          - pydantic>=2.9.2
+          - click>=8.1.7
+          - python-magic>=0.4.27
+          - iso3166>=2.1.1
+          - types-dateparser
 
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v3.6.0

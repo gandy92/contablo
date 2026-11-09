@@ -53,3 +53,10 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["arithmetic_expressions", "arithmetic_expressions.*"]
+ignore_missing_imports = true
