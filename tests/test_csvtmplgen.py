@@ -3,6 +3,8 @@
 import json
 from glob import glob
 
+import pytest
+
 from contablo.csvtmplgen import CsvTemplateGenerator
 from contablo.importspec import ImportColumnSpec
 from contablo.importspec import ImportSpec
@@ -74,9 +76,6 @@ def test_make_import_spec(tmp_path):
     assert dump["columns"][2]["format"] == "-1.000,00"
     assert dump["columns"][2]["field"].startswith("asset_amount|")
 
-    # Current behavior: short alphanumeric values are guessed as dates by the lax date parser.
-    assert dump["columns"][3] == {"label": "G4", "field": "tx_date|order_date|snapshot_date", "format": "dd mmm yyyy"}
-
     no_samples = gen.make_import_spec(gen.input_formats[0], financial_transaction_fields, skip_samples=True)
     assert "samples" not in no_samples.model_dump(exclude_unset=True)["columns"][1]
 
@@ -96,3 +95,19 @@ def test_make_templates_writes_commented_json(tmp_path, capsys):
     lines = open(written, encoding="utf8").read().splitlines()
     assert lines[:2] == ["// Generated with CsvTemplateGenerator from these files:", f"// - {f1}"]
     assert json.loads("\n".join(lines[2:]))["columns"][0]["label"] == "G1"
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="Known bug: the lax dateparser fallback accepts short alphanumeric values like 'r1' as dates",
+)
+@pytest.mark.parametrize("samples", [["r1", "r2"], ["x"], ["val-1", "val-2"]])
+def test_short_alphanumeric_values_are_not_guessed_as_dates(tmp_path, samples):
+    f1 = write(tmp_path / "s.csv", ["S1;S2;S3"] + [f"{value};1;2" for value in samples])
+    gen = CsvTemplateGenerator(financial_transaction_fields)
+    gen.add_file(f1)
+    spec = gen.make_import_spec(gen.input_formats[0], financial_transaction_fields)
+
+    column = spec.model_dump(exclude_unset=True)["columns"][0]
+    assert column["format"] == ""
+    assert column["samples"] == sorted(samples)
