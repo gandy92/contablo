@@ -4,6 +4,7 @@ import json
 import logging
 import time
 from pathlib import Path
+from typing import Any
 from typing import Protocol
 
 from contablo.csv_helper import ChunkInfo
@@ -21,12 +22,12 @@ logger = logging.getLogger(__file__)
 
 
 class KnowsImportSpec(Protocol):
-    def query_by_file_info(self, info: CsvFileInfo) -> ImportSpec: ...
+    def query_by_file_info(self, info: CsvFileInfo) -> ImportSpec | None: ...
 
 
 class CsvTemplateGenerator:
 
-    def __init__(self, fields: list[FieldSpec], import_specs_registry: KnowsImportSpec = None) -> None:
+    def __init__(self, fields: list[FieldSpec], import_specs_registry: KnowsImportSpec | None = None) -> None:
         # Todo: accept a repository with known import specs - ???
         self.fields = fields
         self.import_specs_registry = import_specs_registry
@@ -98,7 +99,7 @@ class CsvTemplateGenerator:
 
         self.add_file_info(CsvFileInfo(source_files=[csv_file], file_encoding=encoding, chunk_info=chunk_info))
 
-    def make_templates(self, output_path_base: str = None, skip_samples: bool = False) -> None:
+    def make_templates(self, output_path_base: str | None = None, skip_samples: bool = False) -> None:
         """Output import spec template files based on the alanyzed csv files."""
         print(f"Found {len(self.input_formats)} distict file formats:")
         for idx, format in enumerate(self.input_formats, 1):
@@ -110,8 +111,8 @@ class CsvTemplateGenerator:
                 print(" " * 7 + f"#{ch:2d}: {len(columns)} columns, {len(lines)} samples")
                 if not lines:
                     continue
-                columns = chunk.delimiter.join(columns)
-                head = columns if len(columns) < 120 else f"{columns[:57]} [..] {columns[-57:]}"
+                header = chunk.delimiter.join(columns)
+                head = header if len(header) < 120 else f"{header[:57]} [..] {header[-57:]}"
                 first = lines[0] if len(lines[0]) < 120 else f"{lines[0][:57]} [..] {lines[0][-57:]}"
                 print(" " * 12 + head)
                 print(" " * 12 + first)
@@ -133,6 +134,8 @@ class CsvTemplateGenerator:
                         print(f"// - {filename}", file=f)
                     # avoid writing \u escaped chars
                     # see https://stackoverflow.com/a/18337754
+                    if spec is None:
+                        raise ValueError("No import spec could be created")
                     json.dump(spec.model_dump(exclude_unset=True), f, indent=2, ensure_ascii=False)
                 print(f"  Template was written to {output_file}")
             except Exception as e:
@@ -151,7 +154,7 @@ class CsvTemplateGenerator:
         try:
             # collect samples for each column:
             reader = csv.reader(chunk.datalines, delimiter=chunk.delimiter, quoting=1)
-            column_values = {k: set() for k in chunk.columns}
+            column_values: dict[str, set[str]] = {k: set() for k in chunk.columns}
             for row in reader:
                 for label, value in zip(chunk.columns, row):
                     if value == "":
@@ -163,18 +166,18 @@ class CsvTemplateGenerator:
             for label in chunk.columns:
                 samples = list(column_values[label])
                 field_type, format = guess_field_and_format(samples)
-                spec = dict(label=label, field=field_type)
+                column: dict[str, Any] = dict(label=label, field=field_type)
                 field_hint = ImporTable(fields).compatible_fields(field_type or "string")
                 if field_hint:
-                    spec["field"] = "|".join(field_hint)
+                    column["field"] = "|".join(field_hint)
 
-                spec["format"] = format
+                column["format"] = format
                 if not field_type and not format and not skip_samples:
-                    spec["samples"] = list(sorted(samples))
+                    column["samples"] = list(sorted(samples))
 
-                specs.append(ImportColumnSpec(**spec))
+                specs.append(ImportColumnSpec(**column))
 
-            spec = ImportSpec(  # Todo: Use dependency injection
+            import_spec = ImportSpec(  # Todo: Use dependency injection
                 label="INSTITUTION-SUBACCOUNT",
                 type="account|depot|mixed|snapshot",  # Todo: Application specific, should be used with ImportSpec subclass
                 encoding=file_info.file_encoding,
@@ -184,7 +187,9 @@ class CsvTemplateGenerator:
                 },  # Todo: Application specific, should be used with ImportSpec subclass
                 columns=specs,
             )
-            return spec
+            return import_spec
 
         except NotImplementedError:  # Todo: leftover from previous implementation - keep or drop?
             pass
+
+        return None
