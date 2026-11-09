@@ -89,7 +89,7 @@ def import_csv_with_spec(
     If the file content does not match the spec, the import will fail
     and another specs might be required to succeed.
     """
-    chunks = load_chunked_textfile(csv_file)
+    chunks: list[list[tuple[int, str]]] = load_chunked_textfile(csv_file)
     for i, chunk in enumerate(chunks, 1):  # chunk is a list of tuples comprising line number and content
         if not len(chunk):
             logging.debug(f"Chunk #{i:2d} is empty.")
