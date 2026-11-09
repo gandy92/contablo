@@ -93,7 +93,7 @@ def parse_date(text: str, date_format: str) -> datetime.date | None:
     """
     try:
         dt = parse_datetime(text, date_format)
-    except ValueError:
+    except (ValueError, AttributeError):
         return None
     return dt.date() if dt is not None else None
 
@@ -105,7 +105,7 @@ def parse_time(text: str, time_format: str) -> datetime.time | None:
     """
     try:
         dt = parse_datetime(text, time_format)
-    except ValueError:
+    except (ValueError, AttributeError):
         return None
     return dt.time() if dt is not None else None
 
@@ -117,7 +117,7 @@ def is_date_strptime(sample: str, strptime_format: str) -> bool:
         if ":" in sample:
             return False
         dt = parse_datetime(sample, strptime_format)
-    except ValueError:
+    except (ValueError, AttributeError):
         return False
     return dt is not None and dt.date() != DEFAULT_DATE
 
@@ -127,7 +127,7 @@ def is_time_strptime(sample: str, strptime_format: str) -> bool:
     try:
         # dt = datetime.datetime.strptime(sample, strptime_format)
         dt = parse_datetime(sample, strptime_format)
-    except ValueError:
+    except (ValueError, AttributeError):
         return False
     return dt is not None and dt.date() == DEFAULT_DATE
 
