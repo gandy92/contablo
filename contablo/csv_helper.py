@@ -26,12 +26,12 @@ def get_file_encoding(filename: str) -> str:
 
 def load_chunked_textfile(
     filename: str,
-    chunk_delimiters: list[str] = None,
-    encoding: str = None,
+    chunk_delimiters: list[str] | None = None,
+    encoding: str | None = None,
 ) -> list[list[tuple[int, str]]]:
     """Read one or more chunks from the given file, delimited by empty lines or one of the specified delimiters."""
     chunk_delimiters = chunk_delimiters if chunk_delimiters is not None else ["", '""', "''"]
-    chunks = [[]]
+    chunks: list[list[tuple[int, str]]] = [[]]
     encoding = encoding or get_file_encoding(filename)
     with open(filename, encoding=encoding) as f:
         chunk_num = 0
@@ -64,7 +64,9 @@ class ChunkInfo(pydantic.BaseModel):
     columns: list[str]
     datalines: list[str]
 
-    def __eq__(self, other: ChunkInfo) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ChunkInfo):
+            return NotImplemented
         # chunks are comparable, if the lists column names are identical.
         if self.columns != other.columns:
             return False
@@ -81,7 +83,9 @@ class CsvFileInfo(pydantic.BaseModel):
     file_encoding: str
     chunk_info: list[ChunkInfo]
 
-    def __eq__(self, other: CsvFileInfo) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, CsvFileInfo):
+            return NotImplemented
         if self.file_encoding != other.file_encoding:
             return False
         if self.chunk_info != other.chunk_info:

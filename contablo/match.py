@@ -1,4 +1,7 @@
 import datetime
+import operator
+from collections.abc import Callable
+from typing import Any
 
 from contablo.format_helpers import get_date_strptime_from_format
 from contablo.format_helpers import get_time_strptime_from_format
@@ -59,6 +62,9 @@ def check_condition_value_compare(raw: str, parts: list[str]) -> bool:
     if raw is None:
         return False
 
+    value: Any
+    ref_value: Any
+
     if subtype == "number":
         num_fmt = NumberFormat.from_format(format)
         value = float(num_fmt.normalize(raw))
@@ -73,8 +79,14 @@ def check_condition_value_compare(raw: str, parts: list[str]) -> bool:
         ref_value = datetime.datetime.strptime(raw_ref, time_fmt).time()
     else:
         raise NotImplementedError(f"check_condition_value_compare requires implementation for {subtype=}")
-    cls = value.__class__
-    methods = {"=": cls.__eq__, "!=": cls.__ne__, "<": cls.__lt__, ">": cls.__gt__, "<=": cls.__le__, ">=": cls.__ge__}
+    methods = {
+        "=": operator.eq,
+        "!=": operator.ne,
+        "<": operator.lt,
+        ">": operator.gt,
+        "<=": operator.le,
+        ">=": operator.ge,
+    }
     assert mode in methods, f"Unknown condition mode '{mode}'"
     func = methods[mode]
     # print(f"## check if {value} {mode} {ref_value} using {func}")
@@ -98,21 +110,21 @@ def check_condition_string_is_not(raw: str, parts: list[str]) -> bool:
     return not check_condition_string_is(raw, parts)
 
 
-def check_condition(cond: str, raw: str) -> list[str]:
+def check_condition(cond: str, raw: str) -> bool:
     # Todo: maybe put this in a class, allow to query for conditions with syntax (see assert in handlers)
-    conditions = [
-        ["empty", 0, check_condition_value_is_empty],
-        ["notempty", 0, check_condition_value_is_not_empty],
-        ["=", 3, check_condition_value_compare],
-        ["!=", 3, check_condition_value_compare],
-        ["<", 3, check_condition_value_compare],
-        [">", 3, check_condition_value_compare],
-        ["<=", 3, check_condition_value_compare],
-        [">=", 3, check_condition_value_compare],
-        ["is", 1, check_condition_string_is],  # value
-        ["is", 2, check_condition_string_is],  # value, [i]
-        ["not", 1, check_condition_string_is_not],  # value
-        ["not", 2, check_condition_string_is_not],  # value, [i]
+    conditions: list[tuple[str, int, Callable[[str, list[str]], bool]]] = [
+        ("empty", 0, check_condition_value_is_empty),
+        ("notempty", 0, check_condition_value_is_not_empty),
+        ("=", 3, check_condition_value_compare),
+        ("!=", 3, check_condition_value_compare),
+        ("<", 3, check_condition_value_compare),
+        (">", 3, check_condition_value_compare),
+        ("<=", 3, check_condition_value_compare),
+        (">=", 3, check_condition_value_compare),
+        ("is", 1, check_condition_string_is),  # value
+        ("is", 2, check_condition_string_is),  # value, [i]
+        ("not", 1, check_condition_string_is_not),  # value
+        ("not", 2, check_condition_string_is_not),  # value, [i]
     ]
     possible_cause = ""
     for type, nargs, func in conditions:
@@ -139,6 +151,7 @@ def check_conditions(
         if field not in primary_raw_values and field not in secondary_raw_values:
             keys = set(list(primary_raw_values.keys()) + list(secondary_raw_values.keys()))
             raise KeyError(f"Field <{field}> requested when only <{keys}> where given.")
-        if not check_condition(cond, primary_raw_values.get(field, secondary_raw_values.get(field, None))):
+        raw = primary_raw_values[field] if field in primary_raw_values else secondary_raw_values[field]
+        if not check_condition(cond, raw):
             return False
     return True
