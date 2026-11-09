@@ -5,8 +5,10 @@ import pytest
 
 from contablo.importable import ImporTable
 from contablo.importablemerge import dicts_match_by_map
+from contablo.importablemerge import importable_merge
 from contablo.importablemerge import importable_merge_one
 from contablo.importablemerge import importable_merge_two
+from contablo.importablemerge import is_undef
 from contablo.importablemerge import pick_one
 
 from .defs_fields import addable_fields
@@ -446,3 +448,92 @@ def test_importable_merge_can_add_subtrades():
         tgt = importable_merge_one(tgt, input, match_rules, addable_fields)
         # will fail unless _allow_add is properly implemented!
         assert tgt.data_vector == [output], f"Mismatch after merge step {idx}"
+
+
+@pytest.mark.parametrize(
+    "value, undef, expected",
+    [
+        (None, [None, ""], True),
+        ("", [None, ""], True),
+        ("x", [None, ""], False),
+        (0, [None, ""], False),
+        (None, None, False),
+        (None, [], False),
+        # Current behavior: a Decimal is never considered undefined, not even when listed explicitly.
+        (Decimal("0"), [None, ""], False),
+        (Decimal("0"), [Decimal("0")], False),
+    ],
+)
+def test_is_undef(value, undef, expected):
+    assert is_undef(value, undef) is expected
+
+
+def test_importable_merge_with_keyed_rules():
+    """Merge two importables using cross-matching reference rules and addable fields."""
+    d = datetime.date(2022, 5, 1)
+    target = ImporTable(financial_transaction_fields)
+    target.data_vector = [
+        {
+            "imported_from": "p:1",
+            "order_reference": "R1",
+            "tx_date": d,
+            "quote_amount": Decimal("10.00"),
+            "tx_type": "BUY",
+        },
+        {
+            "imported_from": "p:2",
+            "order_reference": "R2",
+            "tx_date": d,
+            "quote_amount": Decimal("20.00"),
+            "tx_type": "BUY",
+        },
+    ]
+    source = ImporTable(financial_transaction_fields)
+    source.data_vector = [
+        {"imported_from": "q:1", "reference": "R1", "tx_date": d, "fee_amount": Decimal("1.00"), "fee_currency": "C1"},
+        {"imported_from": "q:2", "reference": "R9", "tx_date": d, "fee_amount": Decimal("2.00"), "fee_currency": "C1"},
+        {
+            "imported_from": "q:3",
+            "order_reference": "R2",
+            "tx_date": d,
+            "quote_amount": Decimal("20.00"),
+            "tx_type": "BUY",
+        },
+    ]
+
+    result = importable_merge(source, target, match_rules, addable_fields)
+
+    assert result.data_vector == [
+        {
+            "imported_from": "p:1|q:1",
+            "order_reference": "R1",
+            "reference": "R1",
+            "tx_date": d,
+            "quote_amount": Decimal("10.00"),
+            "tx_type": "BUY",
+            "fee_amount": Decimal("1.00"),
+            "fee_currency": "C1",
+        },
+        {"imported_from": "q:2", "reference": "R9", "tx_date": d, "fee_amount": Decimal("2.00"), "fee_currency": "C1"},
+        {
+            "imported_from": "p:2",
+            "order_reference": "R2",
+            "tx_date": d,
+            "quote_amount": Decimal("20.00"),
+            "tx_type": "BUY",
+        },
+    ]
+    # inputs stay untouched
+    assert len(target) == 2 and len(source) == 3
+
+
+def test_importable_merge_without_rules_appends():
+    target = ImporTable(financial_transaction_fields)
+    target.data_vector = [{"imported_from": "p:1", "reference": "R1"}]
+    source = ImporTable(financial_transaction_fields)
+    source.data_vector = [{"imported_from": "q:1", "reference": "R1"}]
+    result = importable_merge(source, target)
+    assert result.data_vector == [
+        {"imported_from": "p:1", "reference": "R1"},
+        {"imported_from": "q:1", "reference": "R1"},
+    ]
